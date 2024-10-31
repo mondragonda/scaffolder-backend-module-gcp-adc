@@ -1,0 +1,85 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: adc-deployment-template
+  title: Google Cloud ADC component template
+  description: Deploy a component with Google Cloud ADC
+  tags:
+    - gcp
+    - adc
+spec:
+  owner: group:infrastructure
+  type: service
+  parameters:
+    - title: Fill in component information
+      required:
+        - name
+      properties:
+        dependsOn:
+          title: Related Component or Resource
+          description: Catalog entity which the component relates to (Component, Resource)
+          type: string
+          ui:field: OwnedEntityPicker
+          ui:options:
+            allowArbitraryValues: false
+            allowedKinds:
+              - Component
+              - Resource
+        name:
+          type: string
+          description: Unique name for the component
+          ui:field: EntityNamePicker
+          ui:options: {}
+        description:
+          title: Description
+          description: A description for the component
+          type: string
+          ui:options: {}
+        tags:
+          type: array
+          ui:field: EntityTagsPicker
+          ui:options:
+            kinds: []
+            showCounts: true
+    - title: Select ADC template
+      required:
+        - adcTemplate
+      properties:
+          adcTemplate:
+                title: ADC template
+                type: string
+                description: The ADC template to use
+                ui:field: ADCTemplateSelector
+  steps:
+    - id: deploy
+      name: Deploy ADC selected template
+      action: gcloud:adc:deploy
+      input:
+        adcTemplate: ${{ parameters.adcTemplate }}
+        token: ${{ secrets.googleOAuthToken }}
+    - id: template
+      name: Generate entity configuration
+      action: fetch:template:file
+      input:
+        url: ./catalog-info.yaml
+        targetPath: ./${{ parameters.name }}/catalog-info.yaml
+        replace: true
+        values:
+          name: ${{ parameters.name }}
+          description: ${{ parameters.description }}
+          tags: ${{ parameters.tags }}
+          adcTemplate: ${{ parameters.adcTemplate }}
+          dependsOn: ${{ parameters.dependsOn }}
+          owner: ${{ user.entity.metadata.name }}
+    - id: register
+      name: Register in catalog
+      action: gcloud:adc:catalog_register
+  output:
+    links:
+      - title: Google Cloud resource
+        icon: cloud
+        url: "https://vpc-012323.googlecloud.com"
+      - title: Open in catalog
+        icon: catalog
+        entityRef: ${{ steps.register.output.entityRef }}
+
