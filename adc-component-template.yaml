@@ -10,6 +10,10 @@ metadata:
 spec:
   owner: group:infrastructure
   type: service
+  presentation:
+    buttonLabels:
+      reviewButtonText: Verify
+      createButtonText: Deploy
   parameters:
     - title: Fill in component information
       required:
@@ -52,34 +56,29 @@ spec:
                 ui:field: ADCTemplateSelector
   steps:
     - id: deploy
-      name: Deploy ADC selected template
       action: gcloud:adc:deploy
+      name: Deploy ADC selected template
       input:
         adcTemplate: ${{ parameters.adcTemplate }}
-        token: ${{ secrets.googleOAuthToken }}
-    - id: template
-      name: Generate entity configuration
-      action: fetch:template:file
-      input:
-        url: ./catalog-info.yaml
-        targetPath: ./${{ parameters.name }}/catalog-info.yaml
-        replace: true
-        values:
-          name: ${{ parameters.name }}
-          description: ${{ parameters.description }}
-          tags: ${{ parameters.tags }}
-          adcTemplate: ${{ parameters.adcTemplate }}
-          dependsOn: ${{ parameters.dependsOn }}
-          owner: ${{ user.entity.metadata.name }}
-    - id: register
-      name: Register in catalog
-      action: gcloud:adc:catalog_register
+        adcToken: ${{ secrets.googleOAuthToken }}
+        entity:
+          apiVersion: backstage.io/v1alpha1
+          kind: Component
+          metadata:
+            name: ${{ parameters.name }}
+            description: ${{ parameters.description }}
+            tags: ${{ parameters.tags }}
+          spec:
+            type: service
+            lifecycle: production
+            owner: user:${{ user.entity.metadata.name }}
+            dependsOn:
+              - ${{ parameters.dependsOn }}
   output:
     links:
-      - title: Google Cloud resource
+      - title: Google Cloud Resource Link
         icon: cloud
-        url: "https://vpc-012323.googlecloud.com"
+        url: ${{ steps.deploy.output.resourceUrl }}
       - title: Open in catalog
         icon: catalog
-        entityRef: ${{ steps.register.output.entityRef }}
-
+        entityRef: ${{ steps.deploy.output.entityRef }}

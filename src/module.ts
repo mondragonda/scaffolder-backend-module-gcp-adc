@@ -19,9 +19,8 @@ import {
 } from '@backstage/backend-plugin-api';
 import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
 import { adcDeployAction } from './adc-deploy-action';
-import { adcCatalogRegisterAction, adcEntityProviderServiceRef } from './adc-catalog-register-action';
-import { catalogProcessingExtensionPoint, catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
-import { CatalogClient } from '@backstage/catalog-client';
+import { catalogProcessingExtensionPoint, catalogServiceRef} from '@backstage/plugin-catalog-node/alpha';
+import { adcEntityProviderServiceRef } from './adc-entity-provider-service';
 
 export const catalogModuleGcpAdc = createBackendModule({
   pluginId: 'catalog',
@@ -51,8 +50,7 @@ export const scaffolderModuleGcpAdc = createBackendModule({
           authService: coreServices.auth
       },
       async init({ scaffolder, adcEntityProvider , catalogApi, authService}) {
-        scaffolder.addActions(adcDeployAction());
-        scaffolder.addActions(adcCatalogRegisterAction(adcEntityProvider, catalogApi, authService))
+        scaffolder.addActions(adcDeployAction(adcEntityProvider, catalogApi, authService));
       },
     });
   },

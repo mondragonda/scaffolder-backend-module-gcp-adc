@@ -24,10 +24,11 @@
   },
   "dependencies": {
     "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/catalog-client": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",
+    "@backstage/plugin-scaffolder-backend": "workspace:^",
     "@backstage/plugin-scaffolder-node": "workspace:^",
-    "@backstage/catalog-client": "workspace:^",
     "zod": "^3.23.8"
   },
   "devDependencies": {

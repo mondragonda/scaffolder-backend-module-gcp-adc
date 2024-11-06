@@ -20,4 +20,12 @@
  * @packageDocumentation
  */
 
+export type ADCDeploymentInfo = {
+  adcTemplate: string,
+  adcDeploymentCallUrl: string,
+  resourceUrl: string
+}
+
+export const ADCLocationURL = 'https://gcloud.applicationdesigncenter.google/'
+
 export * from './module';
