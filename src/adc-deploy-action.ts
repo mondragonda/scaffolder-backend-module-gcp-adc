@@ -43,7 +43,7 @@ export const adcDeployAction = (adcEntityProvider: ADCEntityProviderService, cat
     },
     async handler(context) {
 
-      async function withDeploymenttRollbackOnFailure(actionFunction: Function) {
+      async function withDeploymentRollbackOnFailure(actionFunction: Function) {
         try {
           return await actionFunction();
         } catch (error) {
@@ -152,7 +152,7 @@ export const adcDeployAction = (adcEntityProvider: ADCEntityProviderService, cat
 
       if (context.input.writeCatalogInfoFile) {
 
-          return await withDeploymenttRollbackOnFailure(async () => {
+          return await withDeploymentRollbackOnFailure(async () => {
             entity = adcEntityProvider.generateADCEntityConfiguration(entity, adcDeploymentInfo, false)
     
             const catalogWriteAction = createCatalogWriteAction();
@@ -174,9 +174,9 @@ export const adcDeployAction = (adcEntityProvider: ADCEntityProviderService, cat
         });
       }
       
-      return await withDeploymenttRollbackOnFailure(async () => {
+      return await withDeploymentRollbackOnFailure(async () => {
         context.logger.info('Registering entity into the Software Catalog...');
-        const entityRef = stringifyEntityRef(await withDeploymenttRollbackOnFailure(async () => await adcEntityProvider.registerADCEntity(entity, adcDeploymentInfo), context));
+        const entityRef = stringifyEntityRef(await adcEntityProvider.registerADCEntity(entity, adcDeploymentInfo));
   
         context.logger.info('Entity registration succeeded.');
         context.logger.info(`entityRef: ${entityRef}`)
