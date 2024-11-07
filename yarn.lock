@@ -1570,6 +1570,7 @@ __metadata:
     "@backstage/backend-plugin-api": ^1.0.1
     "@backstage/backend-test-utils": ^1.0.2
     "@backstage/catalog-client": ^1.7.1
+    "@backstage/catalog-model": ^1.7.0
     "@backstage/plugin-catalog-node": ^1.13.1
     "@backstage/plugin-scaffolder-backend": ^1.26.2
     "@backstage/plugin-scaffolder-node": ^0.5.0
