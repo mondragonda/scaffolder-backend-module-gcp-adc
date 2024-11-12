@@ -8,7 +8,7 @@ metadata:
     - gcp
     - adc
 spec:
-  owner: group:cloudinfra
+  owner: group:default/cloudinfrastructure
   type: service
   presentation:
     buttonLabels:

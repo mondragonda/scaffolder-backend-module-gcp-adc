@@ -22,15 +22,14 @@ import { createBackendFeatureLoader } from '@backstage/backend-plugin-api';
  * @packageDocumentation
  */
 
-import { catalogModuleGcpAdc, scaffolderModuleGcpAdc, permissionsPolicyGcpAdcBackendModule, googleAPIsAuthPlugin, permissionsPolicyGoogleAPIsBackendModule } from './module';
+import { catalogModuleGcpAdc, scaffolderModuleGcpAdc, googleAPIsAuthPlugin, permissionsPolicyBackendModule } from './module';
 
 
 export default createBackendFeatureLoader({
     *loader() {
         yield catalogModuleGcpAdc;
         yield scaffolderModuleGcpAdc;
-        // yield permissionsPolicyGcpAdcBackendModule;
         yield googleAPIsAuthPlugin;
-        yield permissionsPolicyGoogleAPIsBackendModule;
+        yield permissionsPolicyBackendModule;
     }, 
 });

@@ -24,11 +24,7 @@ import { catalogProcessingExtensionPoint, catalogServiceRef} from '@backstage/pl
 import { adcEntityProviderServiceRef } from './adc-entity-provider-service';
 import { createGoogleAPIsAuthRouter } from './google-apis-auth';
 import { policyExtensionPoint } from '@backstage/plugin-permission-node/alpha';
-import { ADCTemplatePermissionsPolicy } from './adc-permissions-policy';
-import { GoogleAPIsAuthPermissionsPolicy } from './google-apis-auth-permissions-policy';
-import { PermissionPolicy } from '@backstage/plugin-permission-node/src/policy/types';
-import { PolicyDecision } from '../../permission-common/src/types';
-import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import { ExampleOrgPermissionsPolicy } from './example-org-permissions-policy';
 
 export const catalogModuleGcpAdc = createBackendModule({
   pluginId: 'catalog',
@@ -64,19 +60,6 @@ export const scaffolderModuleGcpAdc = createBackendModule({
   },
 });
 
-export const permissionsPolicyGcpAdcBackendModule = createBackendModule({
-  pluginId: 'permission',
-  moduleId: 'gcp-adc-permissions-policy',
-  register(reg) {
-    reg.registerInit({
-      deps: { policy: policyExtensionPoint },
-      async init({ policy }){
-        policy.setPolicy(new ADCTemplatePermissionsPolicy());
-      }
-    })
-  }
-});
-
 export const googleAPIsAuthPlugin = createBackendPlugin({
   pluginId: 'google-apis-auth-backend',
   register(reg) {
@@ -104,14 +87,14 @@ export const googleAPIsAuthPlugin = createBackendPlugin({
   },
 });
 
-export const permissionsPolicyGoogleAPIsBackendModule = createBackendModule({
+export const permissionsPolicyBackendModule = createBackendModule({
   pluginId: 'permission',
-  moduleId: 'google-apis-auth-permissions-policy',
+  moduleId: 'example-org-permissions-policy',
   register(reg) {
     reg.registerInit({
       deps: { policy: policyExtensionPoint },
       async init({ policy }){
-        policy.setPolicy(new GoogleAPIsAuthPermissionsPolicy());
+        policy.setPolicy(new ExampleOrgPermissionsPolicy());
       }
     })
   }

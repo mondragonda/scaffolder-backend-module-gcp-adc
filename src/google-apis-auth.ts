@@ -17,9 +17,14 @@ import { LoggerService, HttpAuthService, UserInfoService, RootConfigService, Per
 import { createPermissionIntegrationRouter } from "@backstage/plugin-permission-node";
 import express from 'express'
 import { AnyAuthClient, GoogleAuth } from 'google-auth-library';
-import { googleApisAuthPermission } from "./google-apis-auth-permissions-policy";
-import { AuthorizeResult } from "@backstage/plugin-permission-common";
-import { NotAllowedError } from "@backstage/errors";
+import { AuthorizeResult, createPermission } from "@backstage/plugin-permission-common";
+import { NotAllowedError, NotImplementedError } from "@backstage/errors";
+
+
+export const googleApisAuthPermission = createPermission({
+    name: 'google.auth.token',
+    attributes: { action: 'read' },
+});
 
 export interface GoogleAPIAuthRouterOptions  {
     logger: LoggerService;
@@ -29,14 +34,12 @@ export interface GoogleAPIAuthRouterOptions  {
     permissions: PermissionsService;
 }
 
-const AUTH_CLIENT_MISCONFIG_ERROR = 'GoogleAuthMisConfig';
-
 export async function createGoogleAPIsAuthRouter(
     { logger, httpAuth, userInfo, config, permissions }: GoogleAPIAuthRouterOptions 
 ): Promise<express.Router> {
 
     const router = createPermissionIntegrationRouter({
-      permissions: [googleApisAuthPermission]
+      permissions: [googleApisAuthPermission],
     });
     
     router.use(express.json());
@@ -72,11 +75,11 @@ export async function createGoogleAPIsAuthRouter(
 
         if (authAccessDecision.result === AuthorizeResult.DENY) {
             logger.info(`${requestInitiator.userEntityRef} access to Google APIs backend token was denied.`);
-            throw new NotAllowedError('Not authorized for use of Google APIs backend authentication.');
+            throw new NotAllowedError('Not authorized for Google APIs backend authentication.');
         }
 
         if (!client) {
-            return response.json({ error: { name: AUTH_CLIENT_MISCONFIG_ERROR, message: "Backend Google APIs authentication is not available." } }).status(200);
+            throw new NotImplementedError("Backend Google APIs authentication is not available.");
         }
         
         const { token } = await client.getAccessToken();
