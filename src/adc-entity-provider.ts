@@ -25,7 +25,7 @@ import {
   parseEntityRef,
 } from '@backstage/catalog-model';
 import { ADCEntityProviderService } from './adc-entity-provider-service';
-import { ADCDeploymentInfo } from '.';
+import { ADCDeploymentInfo } from './types';
 
 
 export class ADCEntityProvider implements ADCEntityProviderService {

@@ -18,7 +18,7 @@ import { createServiceRef } from "@backstage/backend-plugin-api";
 import { CompoundEntityRef, Entity } from "@backstage/catalog-model";
 import { EntityProvider } from "@backstage/plugin-catalog-node";
 import { ADCEntityProvider } from "./adc-entity-provider";
-import { ADCDeploymentInfo } from ".";
+import { ADCDeploymentInfo } from "./types";
 
 
 export interface ADCEntityProviderService extends EntityProvider {

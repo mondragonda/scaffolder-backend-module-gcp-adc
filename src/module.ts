@@ -16,11 +16,19 @@
 import {
   createBackendModule,
   coreServices,
+  createBackendPlugin
 } from '@backstage/backend-plugin-api';
 import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
 import { adcDeployAction } from './adc-deploy-action';
 import { catalogProcessingExtensionPoint, catalogServiceRef} from '@backstage/plugin-catalog-node/alpha';
 import { adcEntityProviderServiceRef } from './adc-entity-provider-service';
+import { createGoogleAPIsAuthRouter } from './google-apis-auth';
+import { policyExtensionPoint } from '@backstage/plugin-permission-node/alpha';
+import { ADCTemplatePermissionsPolicy } from './adc-permissions-policy';
+import { GoogleAPIsAuthPermissionsPolicy } from './google-apis-auth-permissions-policy';
+import { PermissionPolicy } from '@backstage/plugin-permission-node/src/policy/types';
+import { PolicyDecision } from '../../permission-common/src/types';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 export const catalogModuleGcpAdc = createBackendModule({
   pluginId: 'catalog',
@@ -54,4 +62,57 @@ export const scaffolderModuleGcpAdc = createBackendModule({
       },
     });
   },
+});
+
+export const permissionsPolicyGcpAdcBackendModule = createBackendModule({
+  pluginId: 'permission',
+  moduleId: 'gcp-adc-permissions-policy',
+  register(reg) {
+    reg.registerInit({
+      deps: { policy: policyExtensionPoint },
+      async init({ policy }){
+        policy.setPolicy(new ADCTemplatePermissionsPolicy());
+      }
+    })
+  }
+});
+
+export const googleAPIsAuthPlugin = createBackendPlugin({
+  pluginId: 'google-apis-auth-backend',
+  register(reg) {
+    reg.registerInit({
+      deps: {
+        httpRouter: coreServices.httpRouter,
+        logger: coreServices.logger,
+        httpAuth: coreServices.httpAuth,
+        userInfo: coreServices.userInfo,
+        config: coreServices.rootConfig,
+        permissions: coreServices.permissions,
+      },
+      async init({ httpRouter, logger, httpAuth, userInfo, config, permissions }) {
+        httpRouter.use(
+          await createGoogleAPIsAuthRouter({
+            logger,
+            httpAuth,
+            userInfo,
+            config,
+            permissions,
+          })
+        );
+      }
+    })
+  },
+});
+
+export const permissionsPolicyGoogleAPIsBackendModule = createBackendModule({
+  pluginId: 'permission',
+  moduleId: 'google-apis-auth-permissions-policy',
+  register(reg) {
+    reg.registerInit({
+      deps: { policy: policyExtensionPoint },
+      async init({ policy }){
+        policy.setPolicy(new GoogleAPIsAuthPermissionsPolicy());
+      }
+    })
+  }
 });

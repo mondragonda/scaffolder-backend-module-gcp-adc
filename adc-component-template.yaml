@@ -8,7 +8,7 @@ metadata:
     - gcp
     - adc
 spec:
-  owner: group:infrastructure
+  owner: group:cloudinfra
   type: service
   presentation:
     buttonLabels:
@@ -56,7 +56,7 @@ spec:
                 ui:field: ADCTemplateSelector
   steps:
     - id: deploy
-      action: gcloud:adc:deploy
+      action: gcp:adc:deploy
       name: Deploy ADC selected template
       input:
         adcTemplate: ${{ parameters.adcTemplate }}

@@ -14,18 +14,23 @@
  * limitations under the License.
  */
 
+import { createBackendFeatureLoader } from '@backstage/backend-plugin-api';
+
 /**
  * The gcp-adc backend module for the scaffolder plugin.
  *
  * @packageDocumentation
  */
 
-export type ADCDeploymentInfo = {
-  adcTemplate: string,
-  adcDeploymentCallUrl: string,
-  resourceUrl: string
-}
+import { catalogModuleGcpAdc, scaffolderModuleGcpAdc, permissionsPolicyGcpAdcBackendModule, googleAPIsAuthPlugin, permissionsPolicyGoogleAPIsBackendModule } from './module';
 
-export const ADCLocationURL = 'https://gcloud.applicationdesigncenter.google/'
 
-export * from './module';
+export default createBackendFeatureLoader({
+    *loader() {
+        yield catalogModuleGcpAdc;
+        yield scaffolderModuleGcpAdc;
+        // yield permissionsPolicyGcpAdcBackendModule;
+        yield googleAPIsAuthPlugin;
+        yield permissionsPolicyGoogleAPIsBackendModule;
+    }, 
+});
